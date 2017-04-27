@@ -6,29 +6,32 @@ let value = ['A','2','3','4',
             '9','10','J','Q','K'];
 let deck = [];
 
-export default Ember.Service.extend({
-  function createDeck(){
-    deck = []; //reset pre-existing deck.
-    for(let i = 0; i < value.length; i++){ //goes through 1-K
-      for(let j = 0; j <suit.length; j++){ //goes through spades through clubs
-        let val = parseInt(value[i]); //assuming its not a letter it'll be what the number value is
-        if (value[i] === 'J' || value[i] === 'Q' || value[i] === 'K'){ // JQK = 10
-          val = 10;
-        }
-        else if (value[i] === 'A'){ //default for A is 11
-          val = 11;
-        }
-        let card = { //constructs a card object to fit all this stuff into
-          Value: value[i],
-          Suit: suit[j],
-          Val: val
-        };
-        deck.push(card); //hello new deck
+function createDeck(){
+  deck = []; //reset pre-existing deck.
+  for(let i = 0; i < value.length; i++){ //goes through 1-K
+    for(let j = 0; j <suit.length; j++){ //goes through spades through clubs
+      let val = parseInt(value[i]); //assuming its not a letter it'll be what the number value is
+      if (value[i] === 'J' || value[i] === 'Q' || value[i] === 'K'){ // JQK = 10
+        val = 10;
       }
+      else if (value[i] === 'A'){ //default for A is 11
+        val = 11;
+      }
+      let card = { //constructs a card object to fit all this stuff into
+        Value: value[i],
+        Suit: suit[j],
+        Val: val
+      };
+      deck.push(card); //hello new deck
     }
-  },
+  }
+  //return deck;
+}
+createDeck();
 
-  function valueOfHand(hand){ //find the value of a player's Hand based on an array of cards
+export default Ember.Service.extend({
+
+  valueOfHand(hand){ //find the value of a player's Hand based on an array of cards
     let value = 0;
     let aAmount = 0;
     for (let i = 0; i < hand.length; i++){
@@ -47,7 +50,7 @@ export default Ember.Service.extend({
     return value;
   },
 
-  function deal(hand,numCard){ //will deal a random card from the existant deck, no need for shuffle
+  deal(hand,numCard){ //will deal a random card from the existant deck, no need for shuffle
     for(let i =0; i<numCard; i++){ //deals numCard amount of cards to hand
       let randPos = Math.floor(Math.random()*(deck.length)); // every loop will regenerate a new random position value that takes into account the new deck length
       hand.push(deck.splice(randPos,1)); //removes item at the random position and pushes it to the dealt hand
