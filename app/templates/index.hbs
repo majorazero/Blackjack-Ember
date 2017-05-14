@@ -4,8 +4,11 @@
   <h1 class='card--light card'>
     <h2 class='cell card '>
       <button class='btn btn--primary btn--vote' {{action "deal" model on='click'}}> Deal </button>
-      {{outlet}}
+      <button class='btn btn--primary btn--vote' {{action "newHand" model}}>New Hand</button>
     </h2>
+    {{#each model.hand as |hand|}}
+      <ul>{{hand.0.Value}} {{hand.0.Suit}}</ul>
+    {{/each}}
   </h1>
 </div>
 
