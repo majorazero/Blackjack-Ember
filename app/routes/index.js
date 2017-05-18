@@ -5,14 +5,14 @@ export default Ember.Route.extend({
   model(){
     let hand = this.get('store').createHand();
     this.get('store').deal(hand,2);
-    console.log(this.get('store').valueOfHand(hand));
+    //console.log(this.get('store').valueOfHand(hand));
     return hand;
   },
   actions:{
     deal(hand){
       this.get('store').deal(hand,1);
-      console.log(this.get('store').valueOfHand(hand));
-      
+      //console.log(this.get('store').valueOfHand(hand));
+
     },
     newHand(hand){
       this.get('store').newDeck();
@@ -20,7 +20,10 @@ export default Ember.Route.extend({
         hand.hand.pop();
       }
       this.get('store').deal(hand,2);
-      console.log(this.get('store').valueOfHand(hand));
+      //console.log(this.get('store').valueOfHand(hand));
     }
+  },
+  valueOfHand(hand){
+    return 3;
   }
 });

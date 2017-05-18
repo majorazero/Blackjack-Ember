@@ -7,8 +7,9 @@
       <button class='btn btn--primary btn--vote' {{action "newHand" model}}>New Hand</button>
     </h2>
     {{#each model.hand as |hand|}}
-      <ul>{{hand.0.Value}} {{hand.0.Suit}}</ul>
+      {{hand.0.Value}} {{hand.0.Suit}}
     {{/each}}
+    <h2>{{model.valueOfHand}}</h2>
   </h1>
 </div>
 
