@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import Hand from  'bj-ember/models/hand';
 import Card from  'bj-ember/models/card';
+import Game from  'bj-ember/models/game';
 //Part of Deck Construction.
 let suit = ['Spades','Diamonds','Hearts','Clubs'];
 let value = ['A','2','3','4',
@@ -67,10 +68,22 @@ export default Ember.Service.extend({
     }
     Ember.set(hand,'valueOfHand',valueOfHand(hand)); //Lets the template access the value of hand
   },
-  newDeck(){
+  newDeck(){ //Creates a new deck for the New Hand Function.
     createDeck();
   },
   createHand(){
     return Hand.create({hand: []});
+  },
+  createGame(){ //creates the game wrapper
+    createDeck(); //creates a new Deck for every New Game That's made.
+    return Game.create({
+      Cashier: {
+        hand: [] //cashier has a hand
+      },
+      Player: {
+        hand: [], //player has a hand
+        money: {} //Money object contains, chip amount and total ammount of chips in $$
+      }
+    });
   }
 });
