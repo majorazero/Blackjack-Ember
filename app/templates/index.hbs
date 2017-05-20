@@ -3,15 +3,15 @@
     {{#each model.Cashier.hand as |hand|}}
       {{hand.0.Value}} {{hand.0.Suit}}
     {{/each}}
-    <h2>{{model.Cashier.valueOfHand}}</h2>
+    <h2>{{model.Cashier.Bust}}</h2>
     <h2 class='cell card '>
       <button class='btn btn--primary btn--vote' {{action "deal" model.Player on='click'}}>Hit</button>
-      <button class='btn btn--primary btn--vote' {{action "stand" model.Cashier on='click'}}>Stand</button>
+      <button class='btn btn--primary btn--vote' {{action "stand" model on='click'}}>Stand</button>
       <button class='btn btn--primary btn--vote' {{action "newHand" model}}>New Hand</button>
     </h2>
     {{#each model.Player.hand as |hand|}}
       {{hand.0.Value}} {{hand.0.Suit}}
     {{/each}}
-    <h2>{{model.Player.valueOfHand}}</h2>
+    <h2>{{model.Player.Bust}}</h2>
   </h1>
 </div>

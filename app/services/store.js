@@ -68,6 +68,9 @@ export default Ember.Service.extend({
       hand.hand.pushObject(deck.splice(randPos,1)); //removes item at the random position and pushes it to the dealt hand
     }
     Ember.set(hand,'valueOfHand',valueOfHand(hand)); //Lets the template access the value of hand
+    if(hand.valueOfHand > 21){ //Recognizes if a hand is bust.
+      Ember.set(hand,'Bust','Bust!');
+    }
   },
   newDeck(){ //Creates a new deck for the New Hand Function.
     createDeck();
