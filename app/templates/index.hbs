@@ -5,6 +5,7 @@
     {{/each}}
     <h2>{{model.Cashier.Bust}}</h2>
     <h2 class='cell card '>
+      <button class='btn btn--primary btn--vote' {{action "deal" model.Player on='click'}}>Deal</button>
       <button class='btn btn--primary btn--vote' {{action "deal" model.Player on='click'}}>Hit</button>
       <button class='btn btn--primary btn--vote' {{action "stand" model on='click'}}>Stand</button>
       <button class='btn btn--primary btn--vote' {{action "newHand" model}}>New Hand</button>
@@ -13,5 +14,14 @@
       {{hand.0.Value}} {{hand.0.Suit}}
     {{/each}}
     <h2>{{model.Player.Bust}}</h2>
+    <div>Money: ${{model.Player.money}} Bet: ${{model.Bet}}</div>
+    <h2 class='cell card'>
+      <div>Place ya bets, ya piece of shit. </div>
+      <button class='btn btn--primary btn--vote' {{action "bet" model 5 on='click'}}>$5</button>
+      <button class='btn btn--primary btn--vote' {{action "bet" model 10 on='click'}}>$10</button>
+      <button class='btn btn--primary btn--vote' {{action "bet" model 25 on='click'}}>$25</button>
+      <button class='btn btn--primary btn--vote' {{action "bet" model 100 on='click'}}>$100</button>
+      <button class='btn btn--primary btn--vote' {{action "clear" model on='click'}}>Clear Bet</button>
+    </h2>
   </h1>
 </div>

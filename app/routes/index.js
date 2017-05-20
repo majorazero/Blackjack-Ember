@@ -35,6 +35,7 @@ export default Ember.Route.extend({
       this.get('store').deal(game.Cashier,2);
       if(game.Cashier.valueOfHand === 21){
         Ember.set(game.Cashier,'Bust','Blackjack!');
+        Ember.set(game.Player,'Bust','You Lose!');
       }
 
       while(game.Player.hand.length != 0){
@@ -48,13 +49,13 @@ export default Ember.Route.extend({
 
     },
     stand(game){ //The game proceeds to run.
+
       while(game.Cashier.valueOfHand < 17){ //if the value of Hand is 16 or less MUST HIT
         this.get('store').deal(game.Cashier,1);
       }
       if((game.Cashier.valueOfHand === 17) && game.Cashier.hasAce){ //Hit on Soft 17 Scenario
         this.get('store').deal(game.Cashier,1);
       }
-
       if(game.Cashier.Bust != 'Bust!'){ //Determines Win Conditions
         if(game.Cashier.valueOfHand > game.Player.valueOfHand){ //Cashier Wins.
           Ember.set(game.Player,'Bust','You Lose!');
@@ -69,6 +70,21 @@ export default Ember.Route.extend({
       else{//Player wins if Cashier Busts.
         Ember.set(game.Player,'Bust','You Win!');
       }
+    },
+    bet(game,amount){
+      Ember.set(game.Player,'Bust',null);
+      if(amount <= game.Player.money){
+        Ember.set(game.Player,'money',game.Player.money - amount);
+        Ember.set(game,'Bet',game.Bet + amount);
+      }
+      else{
+        Ember.set(game.Player,'Bust','Not Enough Money!');
+      }
+    },
+    clear(game){
+      Ember.set(game.Player,'Bust',null);
+      Ember.set(game.Player,'money',game.Player.money + game.Bet);
+      Ember.set(game,'Bet',0);
     }
   }
 });

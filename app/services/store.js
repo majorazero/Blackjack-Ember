@@ -86,8 +86,9 @@ export default Ember.Service.extend({
       },
       Player: {
         hand: [], //player has a hand
-        money: {} //Money object contains, chip amount and total ammount of chips in $$
-      }
+        money: 500 //Actial chips object unneccesary, we'll just deduct through functions.
+      },
+      Bet: 0
     });
   }
 });
