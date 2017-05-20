@@ -46,6 +46,7 @@ function valueOfHand(handi){ //find the value of a player's Hand based on an arr
     value += hand[i][0].Val; //acrue total value of player's hand
     if (hand[i][0].Value === 'A'){ // if the current value is an Ace, we'll increment the ace counter.
       aAmount++;
+      Ember.set(handi,'hasAce',true);//sets an internal value in the end called hasAce?
     }
     //if(value === 21){break;}
     if (hand[i][0].Value === 'A' && aAmount > 1){  //There can technically only be a max of 1 "11" Ace in a hand at any one time

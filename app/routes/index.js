@@ -30,9 +30,15 @@ export default Ember.Route.extend({
       }
       this.get('store').deal(game.Player,2);
       //console.log(this.get('store').valueOfHand(hand));
+    },
+    stand(cashier){ //basically what the cashier does.
+      while(cashier.valueOfHand < 17){ //if the value of Hand is 16 or less MUST HIT
+        this.get('store').deal(cashier,1);
+      }
+
+      if((cashier.valueOfHand === 17) && cashier.hasAce){ //Hit on Soft 17 Scenario
+        this.get('store').deal(cashier,1);
+      }
     }
-  },
-  valueOfHand(hand){
-    return 3;
   }
 });
