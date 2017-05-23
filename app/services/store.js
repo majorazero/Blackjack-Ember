@@ -60,17 +60,18 @@ function valueOfHand(handi){ //find the value of a player's Hand based on an arr
   return value;
 }
 
+function deal(hand,numCard){ //will deal a random card from the existant deck, no need for shuffle
+  for(let i =0; i<numCard; i++){ //deals numCard amount of cards to hand
+    let randPos = Math.floor(Math.random()*(deck.length)); // every loop will regenerate a new random position value that takes into account the new deck length
+    hand.hand.pushObject(deck.splice(randPos,1)); //removes item at the random position and pushes it to the dealt hand
+  }
+  Ember.set(hand,'valueOfHand',valueOfHand(hand)); //Lets the template access the value of hand
+}
+
 export default Ember.Service.extend({
 
   deal(hand,numCard){ //will deal a random card from the existant deck, no need for shuffle
-    for(let i =0; i<numCard; i++){ //deals numCard amount of cards to hand
-      let randPos = Math.floor(Math.random()*(deck.length)); // every loop will regenerate a new random position value that takes into account the new deck length
-      hand.hand.pushObject(deck.splice(randPos,1)); //removes item at the random position and pushes it to the dealt hand
-    }
-    Ember.set(hand,'valueOfHand',valueOfHand(hand)); //Lets the template access the value of hand
-    if(hand.valueOfHand > 21){ //Recognizes if a hand is bust.
-      Ember.set(hand,'Bust','Bust!');
-    }
+    deal(hand,numCard);
   },
   newDeck(){ //Creates a new deck for the New Hand Function.
     createDeck();
@@ -90,5 +91,52 @@ export default Ember.Service.extend({
       },
       Bet: 0
     });
+  },
+  initGameLogic(game){
+    if(game.Cashier.valueOfHand === 21){
+      Ember.set(game.Cashier,'Bust','Blackjack!');
+      Ember.set(game.Player,'Bust','You Lose!');
+      Ember.set(game,'Bet',0); //Player Loses Money.
+    }
+    if(game.Player.valueOfHand === 21){
+      Ember.set(game.Player,'Bust','Blackjack!');
+      Ember.set(game.Player,'money',game.Player.money + (game.Bet*1.5));
+    }
+  },
+  cashierLogic(game){
+    while(game.Cashier.valueOfHand < 17){ //if the value of Hand is 16 or less MUST HIT
+      deal(game.Cashier,1);
+    }
+    if((game.Cashier.valueOfHand === 17) && game.Cashier.hasAce){ //Hit on Soft 17 Scenario
+      deal(game.Cashier,1);
+    }
+    if(game.Cashier.valueOfHand <= 21){ //Determines Win Conditions
+      if(game.Cashier.valueOfHand > game.Player.valueOfHand){ //Cashier Wins.
+        Ember.set(game.Player,'Bust','You Lose!');
+        Ember.set(game,'Bet',0); //You lose your bet if you lose duh.
+      }
+      else if(game.Cashier.valueOfHand < game.Player.valueOfHand){ //Cashier didn't bust but player's value greater.
+        Ember.set(game.Player,'Bust','You Win!');
+        Ember.set(game.Player,'money',game.Player.money + game.Bet);
+      }
+      else{ //Value Matches.
+        Ember.set(game.Cashier,'Bust','Push.');
+      }
+    }
+    else{//Player wins if Cashier Busts.
+      Ember.set(game.Cashier,'Bust','Bust!');
+      Ember.set(game.Player,'Bust','You Win!');
+      Ember.set(game.Player,'money',game.Player.money + game.Bet);
+    }
+  },
+  betHasMoney(game){
+    Ember.set(game.Player,'Bust',null);
+    if(game.Bet === 0){
+      Ember.set(game.Player,'Bust','Needs to place bet to play.');
+      return false;
+    }
+    else{
+      return true;
+    }
   }
 });
