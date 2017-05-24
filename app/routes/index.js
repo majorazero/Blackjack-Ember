@@ -5,6 +5,10 @@ export default Ember.Route.extend({
   model(){
     //let hand = this.get('store').createHand();
     let game = this.get('store').createGame();
+
+    Ember.set(game,'test','<div class = "playingCards"><div class="card rank-7 spades"><span class="rank">7</span><span class="suit">&spades;</span></div> </div>');
+
+
     return game;
   },
   actions:{

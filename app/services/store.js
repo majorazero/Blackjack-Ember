@@ -3,10 +3,10 @@ import Hand from  'bj-ember/models/hand';
 import Card from  'bj-ember/models/card';
 import Game from  'bj-ember/models/game';
 //Part of Deck Construction.
-let suit = ['Spades','Diamonds','Hearts','Clubs'];
-let value = ['A','2','3','4',
+let suit = ['spades','diams','hearts','clubs'];
+let value = ['a','2','3','4',
             '5','6','7','8',
-            '9','10','J','Q','K'];
+            '9','10','j','q','k'];
 let deck = [];
 
 function createCard(Value,Suit,Val){
@@ -20,10 +20,10 @@ function createDeck(){
   for(let i = 0; i < value.length; i++){ //goes through 1-K
     for(let j = 0; j <suit.length; j++){ //goes through spades through clubs
       let val = parseInt(value[i]); //assuming its not a letter it'll be what the number value is
-      if (value[i] === 'J' || value[i] === 'Q' || value[i] === 'K'){ // JQK = 10
+      if (value[i] === 'j' || value[i] === 'q' || value[i] === 'k'){ // JQK = 10
         val = 10;
       }
-      else if (value[i] === 'A'){ //default for A is 11
+      else if (value[i] === 'a'){ //default for A is 11
         val = 11;
       }
       let card = createCard( //constructs a card object to fit all this stuff into
@@ -31,12 +31,20 @@ function createDeck(){
         suit[j],
         val
       );
+      Ember.set(card,'view',cardHtml(card));
       deck.push(card); //hello new deck
     }
   }
-  //return deck;
 }
 createDeck();
+
+function cardHtml(card){ //makes the html element to display cards.
+  let htmlElement = '<div class="playingCards"><div class="card rank-';
+  htmlElement += card.Value.toString() + ' '+card.Suit+'">';
+  htmlElement += '<span class ="rank">'+card.Value.toString().toUpperCase()+'</span>';
+  htmlElement += '<span class="suit">&'+card.Suit+';</span></div></div>';
+  return htmlElement;
+}
 
 function valueOfHand(handi){ //find the value of a player's Hand based on an array of cards
   let value = 0;
@@ -44,12 +52,12 @@ function valueOfHand(handi){ //find the value of a player's Hand based on an arr
   let hand = handi.hand;
   for (let i = 0; i < hand.length; i++){
     value += hand[i][0].Val; //acrue total value of player's hand
-    if (hand[i][0].Value === 'A'){ // if the current value is an Ace, we'll increment the ace counter.
+    if (hand[i][0].Value === 'a'){ // if the current value is an Ace, we'll increment the ace counter.
       aAmount++;
       Ember.set(handi,'hasAce',true);//sets an internal value in the end called hasAce?
     }
     //if(value === 21){break;}
-    if (hand[i][0].Value === 'A' && aAmount > 1){  //There can technically only be a max of 1 "11" Ace in a hand at any one time
+    if (hand[i][0].Value === 'a' && aAmount > 1){  //There can technically only be a max of 1 "11" Ace in a hand at any one time
       value -= 10; //Subsequent aces are just "1"
     }
   }
