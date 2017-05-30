@@ -197,6 +197,10 @@ p {
   margin-left: 1.5em;
 }
 
+.btn--hidden{
+  display: none;
+}
+
 /* ----- Card ----- */
 
 .card {

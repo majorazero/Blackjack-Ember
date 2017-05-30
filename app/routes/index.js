@@ -5,6 +5,7 @@ export default Ember.Route.extend({
   model(){
     //let hand = this.get('store').createHand();
     let game = this.get('store').createGame();
+    Ember.set(game,'noInsurance',true);
     return game;
   },
   actions:{
@@ -21,14 +22,15 @@ export default Ember.Route.extend({
       if(this.get('store').betHasMoney(game)){ //everything only initiates if player puts down a bet
         Ember.set(game.Player,'Bust',null); //resets the game messages to null
         Ember.set(game.Cashier,'Bust',null);
-        Ember.set(game,'Insurance',null); //resets a game condition to null
+        Ember.set(game,'noInsurance',true); //resets a game condition to "true"
         this.get('store').newDeck(); //resets the deck (can't count cards?)
 
         while(game.Cashier.hand.length != 0){ //removes hand of Cashier.
           game.Cashier.hand.pop();
         }
+        game.Cashier.hand.pushObject([{view: '<div class="playingCards"><div class="card back"></div></div>'}]); //creates a temporary image representing a "face down card"
         this.get('store').deal(game.Cashier,1); //re-deals the cashier's hand.
-
+        Ember.set(game.Cashier,'valueOfHand','?'); //Just so it doesn't display NaN since the placeholder card doesn't actually have a value.
         while(game.Player.hand.length != 0){ //removes hand of Player.
           game.Player.hand.pop();
         }
@@ -66,10 +68,11 @@ export default Ember.Route.extend({
       Ember.set(game,'Bet',0);
     },
     insurance(game){
-      if(game.Insurance === true){ //if insurance pre-requisites are met
+      if(game.noInsurance === false){ //if insurance pre-requisites are met
+        game.Cashier.hand.removeAt(0); //removes placeholder card
         this.get('store').deal(game.Cashier,1); //deals one card to basically "reveal" what the card is
         if(game.Cashier.valueOfHand != 21){ //if cashier does not equal to 21, insurance is lost.
-          Ember.set(game.Player,'money',game.Player.money - game.Bet); 
+          Ember.set(game.Player,'money',game.Player.money - game.Bet);
           this.get('store').cashierLogic(game); //game proceeds afterwards.
         }
         else{ //if it does equal to 21

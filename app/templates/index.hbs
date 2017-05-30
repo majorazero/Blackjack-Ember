@@ -12,7 +12,7 @@
       <button class='btn btn--primary btn--vote' {{action "deal" model on='click'}}>Hit</button>
       <button class='btn btn--primary btn--vote' {{action "stand" model on='click'}}>Stand</button>
       <button class='btn btn--primary btn--vote' {{action "double" model}}>Double</button>
-      <button class='btn btn--primary btn--vote' {{action "insurance" model}}>Insurance</button>
+      <button class='btn btn--primary btn--vote {{if model.noInsurance "btn--hidden"}}' {{action "insurance" model}}>Insurance</button>
     </h2>
     <span class ="playingCards"><ul class="hand">
     {{#each model.Player.hand as |hand|}}

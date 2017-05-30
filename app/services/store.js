@@ -66,6 +66,7 @@ function valueOfHand(handi){ //find the value of a player's Hand based on an arr
     aAmount--;
   }
   return value;
+
 }
 
 function deal(hand,numCard){ //will deal a random card from the existant deck, no need for shuffle
@@ -101,14 +102,9 @@ export default Ember.Service.extend({
     });
   },
   initGameLogic(game){
-    if(game.Cashier.valueOfHand === 11){
-      Ember.set(game,'Insurance',true);
+    if(game.Cashier.hand[1][0].Val === 11){ //Checks if insurance is applicable.
+      Ember.set(game,'noInsurance',false);
     }
-    /*if(game.Cashier.valueOfHand === 21){
-      Ember.set(game.Cashier,'Bust','Blackjack!');
-      Ember.set(game.Player,'Bust','You Lose!');
-      Ember.set(game,'Bet',0); //Player Loses Money.
-    }*/
     if(game.Player.valueOfHand === 21){
       deal(game.Cashier,1);
       if(game.Cashier.valueOfHand === 21){
@@ -121,11 +117,18 @@ export default Ember.Service.extend({
     }
   },
   cashierLogic(game){
+    game.Cashier.hand.removeAt(0); //removes placeholder card
+    Ember.set(game.Cashier,'valueOfHand',valueOfHand(game.Cashier)); //rereads valueOfHand so everything will work.
     while(game.Cashier.valueOfHand < 17){ //if the value of Hand is 16 or less MUST HIT
       deal(game.Cashier,1);
     }
     if((game.Cashier.valueOfHand === 17) && game.Cashier.hasAce){ //Hit on Soft 17 Scenario
       deal(game.Cashier,1);
+    }
+    if(game.Cashier.valueOfHand === 21 && (game.Cashier.hand.length === 2)){ //if Cashier hits blackjack, player instantly loses.
+      Ember.set(game.Cashier,'Bust','Blackjack!');
+      Ember.set(game.Player,'Bust','You Lose!');
+      Ember.set(game,'Bet',0); //Player Loses Money.
     }
     if(game.Cashier.valueOfHand <= 21){ //Determines Win Conditions
       if(game.Cashier.valueOfHand > game.Player.valueOfHand){ //Cashier Wins.
@@ -146,7 +149,7 @@ export default Ember.Service.extend({
       Ember.set(game.Player,'money',game.Player.money + game.Bet);
     }
   },
-  betHasMoney(game){
+  betHasMoney(game){ //can only play the game if player places a bet.
     Ember.set(game.Player,'Bust',null);
     if(game.Bet === 0){
       Ember.set(game.Player,'Bust','Needs to place bet to play.');
