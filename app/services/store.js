@@ -106,13 +106,16 @@ export default Ember.Service.extend({
       Ember.set(game,'noInsurance',false);
     }
     if(game.Player.valueOfHand === 21){
+      game.Cashier.hand.removeAt(0); //removes placeholder card
       deal(game.Cashier,1);
       if(game.Cashier.valueOfHand === 21){
         Ember.set(game.Player,'Bust','Push.');
+        Ember.set(game,'gameOver',true);
       }
       else{
         Ember.set(game.Player,'Bust','Blackjack!');
         Ember.set(game.Player,'money',game.Player.money + (game.Bet*1.5));
+        Ember.set(game,'gameOver',true);
       }
     }
   },
@@ -129,24 +132,29 @@ export default Ember.Service.extend({
       Ember.set(game.Cashier,'Bust','Blackjack!');
       Ember.set(game.Player,'Bust','You Lose!');
       Ember.set(game,'Bet',0); //Player Loses Money.
+      Ember.set(game,'gameOver',true);
     }
     if(game.Cashier.valueOfHand <= 21){ //Determines Win Conditions
       if(game.Cashier.valueOfHand > game.Player.valueOfHand){ //Cashier Wins.
         Ember.set(game.Player,'Bust','You Lose!');
         Ember.set(game,'Bet',0); //You lose your bet if you lose duh.
+        Ember.set(game,'gameOver',true);
       }
       else if(game.Cashier.valueOfHand < game.Player.valueOfHand){ //Cashier didn't bust but player's value greater.
         Ember.set(game.Player,'Bust','You Win!');
         Ember.set(game.Player,'money',game.Player.money + game.Bet);
+        Ember.set(game,'gameOver',true);
       }
       else{ //Value Matches.
         Ember.set(game.Cashier,'Bust','Push.');
+        Ember.set(game,'gameOver',true);
       }
     }
     else{//Player wins if Cashier Busts.
       Ember.set(game.Cashier,'Bust','Bust!');
       Ember.set(game.Player,'Bust','You Win!');
       Ember.set(game.Player,'money',game.Player.money + game.Bet);
+      Ember.set(game,'gameOver',true);
     }
   },
   betHasMoney(game){ //can only play the game if player places a bet.

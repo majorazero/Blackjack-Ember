@@ -6,6 +6,7 @@ export default Ember.Route.extend({
     //let hand = this.get('store').createHand();
     let game = this.get('store').createGame();
     Ember.set(game,'noInsurance',true);
+    Ember.set(game,'gameOver',true);//a conditional called game over determines if a game is ongoing.
     return game;
   },
   actions:{
@@ -20,6 +21,7 @@ export default Ember.Route.extend({
     },
     newHand(game){ //action for dealing with a new hand
       if(this.get('store').betHasMoney(game)){ //everything only initiates if player puts down a bet
+        Ember.set(game,'gameOver',false); //game start.
         Ember.set(game.Player,'Bust',null); //resets the game messages to null
         Ember.set(game.Cashier,'Bust',null);
         Ember.set(game,'noInsurance',true); //resets a game condition to "true"
@@ -46,10 +48,15 @@ export default Ember.Route.extend({
     },
     double(game){
       if(this.get('store').betHasMoney(game)){
-        Ember.set(game.Player,'money',game.Player.money-game.Bet);
-        Ember.set(game,'Bet',game.Bet*2);
-        this.get('store').deal(game.Player,1);
-        this.get('store').cashierLogic(game);
+        if(game.Player.money < game.Bet){
+          Ember.set(game.Player,'Bust','Not Enough Money!');
+        }
+        else{
+          Ember.set(game.Player,'money',game.Player.money-game.Bet);
+          Ember.set(game,'Bet',game.Bet*2);
+          this.get('store').deal(game.Player,1);
+          this.get('store').cashierLogic(game);
+        }
       }
     },
     bet(game,amount){
@@ -78,9 +85,11 @@ export default Ember.Route.extend({
         else{ //if it does equal to 21
           if(game.Player.valueOfHand === 21){
             Ember.set(game.Player,'money',game.Player.money + 2*game.Bet); //insurance pays 2:1, in the case of a push, you just get the 2:1 pay out from the insurance and don't lose your initial bet
+              Ember.set(game,'gameOver',true);
           }
           else{
             Ember.set(game.Player,'money',game.Player.money +game.Bet); //You lose your Bet, but get the 2:1 pay out, which is basically a 1:1 Payout, so you just get a 1:1 payout.
+              Ember.set(game,'gameOver',true);
           }
         }
       }

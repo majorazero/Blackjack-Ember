@@ -8,11 +8,17 @@
     V: {{model.Cashier.valueOfHand}}
     <h2>{{model.Cashier.Bust}}</h2>
     <h2 class='cell card '>
-      <button class='btn btn--primary btn--vote' {{action "newHand" model on='click'}}>Deal</button>
-      <button class='btn btn--primary btn--vote' {{action "deal" model on='click'}}>Hit</button>
-      <button class='btn btn--primary btn--vote' {{action "stand" model on='click'}}>Stand</button>
-      <button class='btn btn--primary btn--vote' {{action "double" model}}>Double</button>
-      <button class='btn btn--primary btn--vote {{if model.noInsurance "btn--hidden"}}' {{action "insurance" model}}>Insurance</button>
+      {{#if model.gameOver}}
+        <button class='btn btn--primary btn--vote' {{action "newHand" model on='click'}}>Deal</button>
+      {{/if}}
+      {{#unless model.gameOver}}
+        <button class='btn btn--primary btn--vote' {{action "deal" model on='click'}}>Hit</button>
+        <button class='btn btn--primary btn--vote' {{action "stand" model on='click'}}>Stand</button>
+        <button class='btn btn--primary btn--vote' {{action "double" model}}>Double</button>
+      {{/unless}}
+      {{#unless model.noInsurance}}
+        <button class='btn btn--primary btn--vote' {{action "insurance" model}}>Insurance</button>
+      {{/unless}}
     </h2>
     <span class ="playingCards"><ul class="hand">
     {{#each model.Player.hand as |hand|}}
