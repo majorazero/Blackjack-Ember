@@ -101,14 +101,23 @@ export default Ember.Service.extend({
     });
   },
   initGameLogic(game){
-    if(game.Cashier.valueOfHand === 21){
+    if(game.Cashier.valueOfHand === 11){
+      Ember.set(game,'Insurance',true);
+    }
+    /*if(game.Cashier.valueOfHand === 21){
       Ember.set(game.Cashier,'Bust','Blackjack!');
       Ember.set(game.Player,'Bust','You Lose!');
       Ember.set(game,'Bet',0); //Player Loses Money.
-    }
+    }*/
     if(game.Player.valueOfHand === 21){
-      Ember.set(game.Player,'Bust','Blackjack!');
-      Ember.set(game.Player,'money',game.Player.money + (game.Bet*1.5));
+      deal(game.Cashier,1);
+      if(game.Cashier.valueOfHand === 21){
+        Ember.set(game.Player,'Bust','Push.');
+      }
+      else{
+        Ember.set(game.Player,'Bust','Blackjack!');
+        Ember.set(game.Player,'money',game.Player.money + (game.Bet*1.5));
+      }
     }
   },
   cashierLogic(game){
@@ -145,6 +154,14 @@ export default Ember.Service.extend({
     }
     else{
       return true;
+    }
+  },
+  isSplit(game){ //detects if a split occurs.
+    if (game.Player.hand[0][0].Value === game.Player.hand[1][0].Value){ //split happens when opening hand has same value
+      return true;
+    }
+    else{
+      return false;
     }
   }
 });

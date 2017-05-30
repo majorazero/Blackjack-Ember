@@ -5,10 +5,6 @@ export default Ember.Route.extend({
   model(){
     //let hand = this.get('store').createHand();
     let game = this.get('store').createGame();
-
-    Ember.set(game,'test','<div class = "playingCards"><div class="card rank-7 spades"><span class="rank">7</span><span class="suit">&spades;</span></div> </div>');
-
-
     return game;
   },
   actions:{
@@ -21,25 +17,25 @@ export default Ember.Route.extend({
         }
       }
     },
-    newHand(game){
-      if(this.get('store').betHasMoney(game)){
-        Ember.set(game.Player,'Bust',null);
+    newHand(game){ //action for dealing with a new hand
+      if(this.get('store').betHasMoney(game)){ //everything only initiates if player puts down a bet
+        Ember.set(game.Player,'Bust',null); //resets the game messages to null
         Ember.set(game.Cashier,'Bust',null);
+        Ember.set(game,'Insurance',null); //resets a game condition to null
+        this.get('store').newDeck(); //resets the deck (can't count cards?)
 
-        this.get('store').newDeck();
-
-        while(game.Cashier.hand.length != 0){
+        while(game.Cashier.hand.length != 0){ //removes hand of Cashier.
           game.Cashier.hand.pop();
         }
-        this.get('store').deal(game.Cashier,2);
+        this.get('store').deal(game.Cashier,1); //re-deals the cashier's hand.
 
-        while(game.Player.hand.length != 0){
+        while(game.Player.hand.length != 0){ //removes hand of Player.
           game.Player.hand.pop();
         }
-        this.get('store').deal(game.Player,2);
+        this.get('store').deal(game.Player,2);//re-deals the player's hand.
 
         this.get('store').initGameLogic(game); //Re-run init for New hands.
-
+        this.get('store').isSplit(game); //Checks if split occurs.
         //console.log(this.get('store').valueOfHand(hand));
       }
     },
@@ -68,6 +64,26 @@ export default Ember.Route.extend({
       Ember.set(game.Player,'Bust',null);
       Ember.set(game.Player,'money',game.Player.money + game.Bet);
       Ember.set(game,'Bet',0);
+    },
+    insurance(game){
+      if(game.Insurance === true){ //if insurance pre-requisites are met
+        this.get('store').deal(game.Cashier,1); //deals one card to basically "reveal" what the card is
+        if(game.Cashier.valueOfHand != 21){ //if cashier does not equal to 21, insurance is lost.
+          Ember.set(game.Player,'money',game.Player.money - game.Bet); 
+          this.get('store').cashierLogic(game); //game proceeds afterwards.
+        }
+        else{ //if it does equal to 21
+          if(game.Player.valueOfHand === 21){
+            Ember.set(game.Player,'money',game.Player.money + 2*game.Bet); //insurance pays 2:1, in the case of a push, you just get the 2:1 pay out from the insurance and don't lose your initial bet
+          }
+          else{
+            Ember.set(game.Player,'money',game.Player.money +game.Bet); //You lose your Bet, but get the 2:1 pay out, which is basically a 1:1 Payout, so you just get a 1:1 payout.
+          }
+        }
+      }
+      else{
+        Ember.set(game.Player,'Bust','Now is not the time!');
+      }
     }
   }
 });
