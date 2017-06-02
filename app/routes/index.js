@@ -1,21 +1,18 @@
 import Ember from 'ember';
-//let hand = [];
 export default Ember.Route.extend({
   store: Ember.inject.service(),
   model(){
-    //let hand = this.get('store').createHand();
     let game = this.get('store').createGame();
-    Ember.set(game,'noInsurance',true);
-    Ember.set(game,'gameOver',true);//a conditional called game over determines if a game is ongoing.
     return game;
   },
   actions:{
     deal(game){
-      if(this.get('store').betHasMoney(game)){
+      if(this.get('store').betHasMoney(game)){ //you can only deal if you have money.
         this.get('store').deal(game.Player,1);
         if(game.Player.valueOfHand > 21){ //Recognizes if a hand is bust.
           Ember.set(game.Player,'Bust','Bust!');
           Ember.set(game,'Bet',0);
+          Ember.set(game,'gameOver',true); //game ends if you bust.
         }
       }
     },
@@ -25,6 +22,7 @@ export default Ember.Route.extend({
         Ember.set(game.Player,'Bust',null); //resets the game messages to null
         Ember.set(game.Cashier,'Bust',null);
         Ember.set(game,'noInsurance',true); //resets a game condition to "true"
+        Ember.set(game,'isSplit',false); //resets split condition to 'false' again.
         this.get('store').newDeck(); //resets the deck (can't count cards?)
 
         while(game.Cashier.hand.length != 0){ //removes hand of Cashier.
@@ -39,8 +37,6 @@ export default Ember.Route.extend({
         this.get('store').deal(game.Player,2);//re-deals the player's hand.
 
         this.get('store').initGameLogic(game); //Re-run init for New hands.
-        this.get('store').isSplit(game); //Checks if split occurs.
-        //console.log(this.get('store').valueOfHand(hand));
       }
     },
     stand(game){ //The game proceeds to run.
@@ -96,6 +92,9 @@ export default Ember.Route.extend({
       else{
         Ember.set(game.Player,'Bust','Now is not the time!');
       }
+    },
+    split(game){
+      
     }
   }
 });

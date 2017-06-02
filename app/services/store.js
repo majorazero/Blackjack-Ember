@@ -36,7 +36,6 @@ function createDeck(){
     }
   }
 }
-createDeck();
 
 function cardHtml(card){ //makes the html element to display cards.
   let htmlElement = '<div class="playingCards"><div class="card rank-';
@@ -98,21 +97,27 @@ export default Ember.Service.extend({
         hand: [], //player has a hand
         money: 500 //Actial chips object unneccesary, we'll just deduct through functions.
       },
-      Bet: 0
+      Bet: 0, //Bet counter.
+      noInsurance: true, //neccesary to hide certain buttons.
+      isSplit: false, //neccesary to hide certain buttons.
+      gameOver: true //a conditional called game over determines if a game is ongoing.
     });
   },
   initGameLogic(game){
     if(game.Cashier.hand[1][0].Val === 11){ //Checks if insurance is applicable.
       Ember.set(game,'noInsurance',false);
     }
-    if(game.Player.valueOfHand === 21){
+    if (game.Player.hand[0][0].Value === game.Player.hand[1][0].Value){ //checks for splits.
+      Ember.set(game,'isSplit',true);
+    }
+    if(game.Player.valueOfHand === 21){ //checks if player is eligible for blackjack.
       game.Cashier.hand.removeAt(0); //removes placeholder card
-      deal(game.Cashier,1);
-      if(game.Cashier.valueOfHand === 21){
+      deal(game.Cashier,1); //checks if cashier also has a blackjack.
+      if(game.Cashier.valueOfHand === 21){ //if cashier has a blackjack noone wins.
         Ember.set(game.Player,'Bust','Push.');
         Ember.set(game,'gameOver',true);
       }
-      else{
+      else{ //otherwise immediately win.
         Ember.set(game.Player,'Bust','Blackjack!');
         Ember.set(game.Player,'money',game.Player.money + (game.Bet*1.5));
         Ember.set(game,'gameOver',true);
@@ -165,14 +170,6 @@ export default Ember.Service.extend({
     }
     else{
       return true;
-    }
-  },
-  isSplit(game){ //detects if a split occurs.
-    if (game.Player.hand[0][0].Value === game.Player.hand[1][0].Value){ //split happens when opening hand has same value
-      return true;
-    }
-    else{
-      return false;
     }
   }
 });
