@@ -81,6 +81,13 @@ export default Ember.Service.extend({
   deal(hand,numCard){ //will deal a random card from the existant deck, no need for shuffle
     deal(hand,numCard);
   },
+  deal2(hand,numCard){ //how I want to implment the split function would require so much re-writing this is easier.
+    for(let i =0; i<numCard; i++){ //deals numCard amount of cards to hand
+      let randPos = Math.floor(Math.random()*(deck.length)); // every loop will regenerate a new random position value that takes into account the new deck length
+      hand.pushObject(deck.splice(randPos,1)); //removes item at the random position and pushes it to the dealt hand
+    }
+    //Ember.set(hand,'valueOfHand',valueOfHand(hand))
+  },
   newDeck(){ //Creates a new deck for the New Hand Function.
     createDeck();
   },
@@ -97,10 +104,14 @@ export default Ember.Service.extend({
         hand: [], //player has a hand
         money: 500 //Actial chips object unneccesary, we'll just deduct through functions.
       },
+      PlayerSplit:{
+        hand: []
+      }
+      ,
       Bet: 0, //Bet counter.
       noInsurance: true, //neccesary to hide certain buttons.
       isSplit: false, //neccesary to hide certain buttons.
-      gameOver: true //a conditional called game over determines if a game is ongoing.
+      gameOver: true //a conditional called game over determines if a game is ongoing.,
     });
   },
   initGameLogic(game){

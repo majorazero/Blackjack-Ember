@@ -3,6 +3,12 @@ export default Ember.Route.extend({
   store: Ember.inject.service(),
   model(){
     let game = this.get('store').createGame();
+    //game.PlayerSplit.hand[0].pushObject({hand: 3});
+    game.PlayerSplit.hand.pushObject({hand:[]});
+    this.get('store').deal2(game.PlayerSplit.hand[0].hand,2);
+    game.PlayerSplit.hand.pushObject({hand:[]});
+    this.get('store').deal2(game.PlayerSplit.hand[1].hand,2);
+    console.log(game.PlayerSplit.hand[0]); //FIX valueOfHand to be more encompassing.
     return game;
   },
   actions:{
@@ -94,7 +100,7 @@ export default Ember.Route.extend({
       }
     },
     split(game){
-      
+
     }
   }
 });

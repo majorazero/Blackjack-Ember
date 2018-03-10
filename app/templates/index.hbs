@@ -20,6 +20,7 @@
       {{/unless}}
       {{/unless}}
     </h2>
+
     <span class ="playingCards"><ul class="hand">
     {{#each model.Player.hand as |hand|}}
       <li>{{{hand.0.view}}}</li> <!-- We have to use triple handlebar because view is a html element. -->
