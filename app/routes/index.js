@@ -1,6 +1,11 @@
 import Ember from 'ember';
 export default Ember.Route.extend({
   store: Ember.inject.service(),
+  /**
+  * model is the object that index.html can access
+  * because of that we basically are binding the model to the game wrapper
+  * That way we can access all game properties through html 
+  */
   model(){
     let game = this.get('store').createGame();
     //game.PlayerSplit.hand[0].pushObject({hand: 3});
@@ -12,17 +17,26 @@ export default Ember.Route.extend({
     return game;
   },
   actions:{
+    /**
+    * Deals a card to player (if they have money) and determines if player busts.
+    * @param {Object} game Accepts the game wrapper object.
+    */
     deal(game){
-      if(this.get('store').betHasMoney(game)){ //you can only deal if you have money.
+      if(this.get('store').betHasMoney(game)){
         this.get('store').deal(game.Player,1);
-        if(game.Player.valueOfHand > 21){ //Recognizes if a hand is bust.
+        if(game.Player.valueOfHand > 21){
           Ember.set(game.Player,'Bust','Bust!');
           Ember.set(game,'Bet',0);
-          Ember.set(game,'gameOver',true); //game ends if you bust.
+          Ember.set(game,'gameOver',true);
         }
       }
     },
-    newHand(game){ //action for dealing with a new hand
+    /**
+    * Deals with rerolling a hand after you win/lose
+    * Resets a new play instance but not things including money or current progress
+    * @param {Object} game Accepts the game wrapper object.
+    */
+    newHand(game){
       if(this.get('store').betHasMoney(game)){ //everything only initiates if player puts down a bet
         Ember.set(game,'gameOver',false); //game start.
         Ember.set(game.Player,'Bust',null); //resets the game messages to null
@@ -45,9 +59,18 @@ export default Ember.Route.extend({
         this.get('store').initGameLogic(game); //Re-run init for New hands.
       }
     },
+    /**
+    * Once the player chooses to stand, the game runs Cashier's game logic
+    * and determines result of the game.
+    * @param {Object} game Accepts the game wrapper object
+    */
     stand(game){ //The game proceeds to run.
       this.get('store').cashierLogic(game);
     },
+    /**
+    * Lets the player double their bet. and immediatley runs Cashier Logic.
+    * @param {Object} game Accepts the game wrapper object
+    */
     double(game){
       if(this.get('store').betHasMoney(game)){
         if(game.Player.money < game.Bet){
@@ -61,6 +84,11 @@ export default Ember.Route.extend({
         }
       }
     },
+    /**
+    * Deducts money from the player's money amount to be placed on a the game's bet counter
+    * @param {Object} game Accepts the game wrapper object
+    * @param {Integer} amount Integer representing money you'd want to bet
+    */
     bet(game,amount){
       Ember.set(game.Player,'Bust',null);
       if(amount <= game.Player.money){
@@ -71,11 +99,19 @@ export default Ember.Route.extend({
         Ember.set(game.Player,'Bust','Not Enough Money!');
       }
     },
+    /**
+    * Let's player clear their bet amount if they made a mistake.
+    * @param {Object} game Accepts a game wrapper object
+    */
     clear(game){
       Ember.set(game.Player,'Bust',null);
       Ember.set(game.Player,'money',game.Player.money + game.Bet);
       Ember.set(game,'Bet',0);
     },
+    /**
+    * Determines how insurance logic works.
+    * @param {Object} game Accepts a game wrapper object
+    */
     insurance(game){
       if(game.noInsurance === false){ //if insurance pre-requisites are met
         game.Cashier.hand.removeAt(0); //removes placeholder card
@@ -99,6 +135,10 @@ export default Ember.Route.extend({
         Ember.set(game.Player,'Bust','Now is not the time!');
       }
     },
+    /**
+    * TBD function dealing with how splitting works.
+    * @param {Object} game Accepts a game wrapper object
+    */
     split(game){
 
     }
